@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-11-17T06:42:29.000Z</updated>
+  <updated>2016-11-17T06:44:10.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,13 +16,13 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Implement &quot;or&quot; operator in ES.</title>
-    <link href="http://yoursite.com/2016/11/16/elasticsearch-multi-fileds/"/>
-    <id>http://yoursite.com/2016/11/16/elasticsearch-multi-fileds/</id>
+    <title>Implement &quot;or&quot; operator in Elasticsearch</title>
+    <link href="http://yoursite.com/2016/11/16/implement_or_operator_in_elasticsearch/"/>
+    <id>http://yoursite.com/2016/11/16/implement_or_operator_in_elasticsearch/</id>
     <published>2016-11-16T07:46:16.000Z</published>
-    <updated>2016-11-17T06:42:29.000Z</updated>
+    <updated>2016-11-17T06:44:10.000Z</updated>
     
-    <content type="html"><![CDATA[<p>以下内容基于 elasticsearch 2.0.1 。</p>
+    <content type="html"><![CDATA[<p>以下内容基于 Elasticsearch 2.0.1 。</p>
 <p>首先是 <code>or filter</code> 已经变成了 <code>bool</code> ，它是专门用来合并 queries ，支持 or、and、not 这类操作符的，大概相当于 <code>()</code>(?).</p>
 <ul>
 <li><code>bool</code> 中的 <code>must</code> 就等于 SQL 中的 <code>AND</code></li>
@@ -39,7 +39,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;以下内容基于 elasticsearch 2.0.1 。&lt;/p&gt;
+      &lt;p&gt;以下内容基于 Elasticsearch 2.0.1 。&lt;/p&gt;
 &lt;p&gt;首先是 &lt;code&gt;or filter&lt;/code&gt; 已经变成了 &lt;code&gt;bool&lt;/code&gt; ，它是专门用来合并 queries ，支持 or、and、not 这类操作符的，大概相当于 &lt;cod
     
     </summary>
