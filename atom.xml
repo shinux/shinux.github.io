@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-11-24T06:57:56.000Z</updated>
+  <updated>2016-11-30T12:26:41.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,42 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Overkill for small efficiencies</title>
+    <link href="http://yoursite.com/2016/11/30/overkill_for_small_efficiencies/"/>
+    <id>http://yoursite.com/2016/11/30/overkill_for_small_efficiencies/</id>
+    <published>2016-11-30T15:46:16.000Z</published>
+    <updated>2016-11-30T12:26:41.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>由同事 review 我的代码时，建议我把 if-else 转换成 ternary operator 的方式，并表示这样可读性更强，进而引发出的一些联想和思考。我承认 <code>? :</code> 确实很酷，嵌套起来让别人比较难懂也是一种常用的炫技方式（雾），但是事实真的是这样嘛？</p>
+<h6 id="差异"><a href="#差异" class="headerlink" title="差异"></a>差异</h6><p>令人初学者津津乐道的 The zen of Python 里面有一句:</p>
+<blockquote>
+<p>There should be one– and preferably only one –obvious way to do it.</p>
+</blockquote>
+<p>于是年轻的刚接触 Python 的我，开始执迷于一些语言原生方法的执行效率问题。比如 list comprehension 是不是远好于 for loop ；而在 Python3 中几个 FP 方法变成了返回 iterator 的 lazy evaluation，是不是在大多数情况下又优于 list comprehension 了呢？于是时间被消耗在那些用 dis 反编译出来的字节码和数个测试样例上，以及最后得出了几乎永恒不变的结论：“虽然有一些 <del>negligible</del> 区别，但是仍然要考虑使用场景”。布道师和某些教程中会把这些东西当做噱头来讲，并表示这些真的很重要，那凝重的表情就像是在说你不这样写程序就会崩溃、就不能成为合格的程序员一样。</p>
+<p>认识一位程序员，当我问他关于两种写法的区别时，他永远会淡淡地对我说，一个省流量，一个省时间。因为绝大多数情况下他们的执行效率根本没有很大的差别（也可能他识破了我面对的量级太小），大到需要不顾一切地把代码里所有另一种写法全部替换掉。</p>
+<p>类似的可读性和效率问题，大概连给银弹做火药粉末的资格都轮不到，更别提有没有的问题了。</p>
+<h6 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h6><blockquote>
+<p>We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil.</p>
+</blockquote>
+<p>另一个问题就是时间成本的问题，程序员或多或少都会接触到一些优化执行效率的常识，比如一个后端查询，需要通过数据库取得数据之后返回给前端，那么（通常）把筛选集中到 io 操作即 SQL 语句中是一个比较好的方式。然而当筛选条件比较复杂时，这个举动就带来了许多问题，为了把所有的筛选集中到 SQL 中，还需要面对 subquery 带来的局限性（诸如 <code>MySQL doesn&#39;t yet support &#39;LIMIT &amp; IN/ALL/ANY/SOME subquery</code>截止到  2016.11.29 MySQL 最新的 8.0 也仍然是不支持的) ，数据库连接器或 ORM 对数据库操作的支持程度，代码的可读性，以及是否真的可以把所有筛选放到 SQL 中的问题（比如 left outer join multi rows 那糟糕的返回表现形式）。最后你成功了，你终于把筛选全部放入了 SQL 查询里，然后鄙视了一下那个愚蠢地用某种后端语言对数据库查询结果进行过滤的方式，你很想看看花了这么久的时间写出的代码是不是碾压式地显著提高了执行效率，结果令你大失所望，并没有，起码在筛选后的数据处于万级以下是没有的，而且代码好难看，毕竟如果 SQL 好看，那么我们应该抛弃一切影响效率的 ORM，在代码中全部使用 raw SQL 语句了。</p>
+<h6 id="深度"><a href="#深度" class="headerlink" title="深度"></a>深度</h6><p>winter 还没有自大地撕王垠、离开知乎之前，其实还是有一些可以看的答案的，比如：</p>
+<blockquote>
+<p>「答题基本只说一个名词，问深了得不到答案，挑战你的时候，又会快速推翻自己的结论，说做优化，又语焉不详，说不出来」</p>
+</blockquote>
+<p>我想大部分人提到 xxx 好、xxx 快的时候，大致也就如此了，这也合理，毕竟我们的日常也不是研读源码和专注优化效率。但我想如果你能引经据典的讲出差异，最好上几个 Gist 跑起来，强势证明一下自己的理论，那再好不过了。否则随便抓一个 StackOverflow 或者知乎上的一家之言并不能证明什么。</p>
+<p>归根结底，了解它们的差异是有必要的，但是花费很多时间去优化这些微小的执行效率、可读性的问题，几乎是没有意义的，除非你从来不加班，也没有别的学习计划，又或者你的 title 是代码细节优化工程师23333。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;由同事 review 我的代码时，建议我把 if-else 转换成 ternary operator 的方式，并表示这样可读性更强，进而引发出的一些联想和思考。我承认 &lt;code&gt;? :&lt;/code&gt; 确实很酷，嵌套起来让别人比较难懂也是一种常用的炫技方式（雾），但是事实真
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Implement &quot;or&quot; operator in Elasticsearch</title>
