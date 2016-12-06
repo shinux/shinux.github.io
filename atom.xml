@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-12-01T02:11:24.000Z</updated>
+  <updated>2016-12-01T05:27:02.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2016/11/30/overkill_for_small_efficiencies/"/>
     <id>http://yoursite.com/2016/11/30/overkill_for_small_efficiencies/</id>
     <published>2016-11-30T15:46:16.000Z</published>
-    <updated>2016-12-01T02:11:24.000Z</updated>
+    <updated>2016-12-01T05:27:02.000Z</updated>
     
     <content type="html"><![CDATA[<p>由同事 review 我的代码时，建议我把 if-else 转换成 ternary operator 的方式，并表示这样可读性更强，进而引发出的一些联想和思考。我承认 <code>? :</code> 确实很酷，嵌套起来让别人比较难懂也是一种常用的炫技方式（雾），但是事实真的是这样嘛？</p>
 <h6 id="差异"><a href="#差异" class="headerlink" title="差异"></a>差异</h6><p>令初学者津津乐道的 The zen of Python 里面有一句:</p>
@@ -33,7 +33,7 @@
 <h6 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h6><blockquote>
 <p>We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil.</p>
 </blockquote>
-<p>另一个问题就是时间成本的问题，程序员或多或少都会接触到一些优化执行效率的常识，比如一个后端查询，需要通过数据库取得数据之后返回给前端，那么（通常）把筛选集中到 io 操作即 SQL 语句中是一个比较好的方式。然而当筛选条件比较复杂时，这个举动就带来了许多问题：为了把所有的筛选集中到 SQL 中，需要面对 subquery 带来的局限性（诸如 <code>MySQL doesn&#39;t yet support &#39;LIMIT &amp; IN/ALL/ANY/SOME subquery</code>截止到 2016.11.29 MySQL 最新的 8.0 也仍然是不支持的) 、数据库连接器或 ORM 对数据库操作的支持程度、代码的可读性、以及是否真的可以把所有筛选放到 SQL 中的问题等等（比如 left outer join multi rows 那糟糕的返回表现形式）。就算到了最后，你成功了，终于把筛选全部放入了 SQL 查询里，顺便鄙视了一下那个愚蠢地用某种后端语言对数据库查询结果进行过滤的方式，你很想看看花了这么久的时间写出的代码是不是碾压式地显著提高了执行效率，结果令你大失所望，并没有，起码在筛选后的数据处于万级以下是没有的，而且代码好难看，毕竟如果 SQL 好看，那么我们应该抛弃一切影响效率的 ORM，在代码中全部使用 raw SQL 语句了。显而易见地，为了并不知道有多少提升而无脑地进行所谓的效率优化，让我们失去了更多。</p>
+<p>另一个问题就是时间成本的问题，程序员或多或少都会接触到一些优化执行效率的常识，比如一个后端查询，需要通过数据库取得数据之后返回给前端，那么（通常）把筛选集中到 io 操作即 SQL 语句中是一个比较好的方式。然而当筛选条件比较复杂时，这个举动就带来了许多问题：为了把所有的筛选集中到 SQL 中，需要面对 subquery 带来的局限性（诸如 <code>MySQL doesn&#39;t yet support &#39;LIMIT &amp; IN/ALL/ANY/SOME subquery</code>截止到 2016.11.29 MySQL 最新的 8.0 也仍然是不支持的）、数据库连接器或 ORM 对数据库操作的支持程度、代码的可读性、以及是否真的可以把所有筛选放到 SQL 中的问题等等（比如 left outer join multi rows 那糟糕的返回表现形式）。就算到了最后，你成功了，终于把筛选全部放入了 SQL 查询里，顺便鄙视了一下那个愚蠢地用某种后端语言对数据库查询结果进行过滤的方式，你很想看看花了这么久的时间写出的代码是不是碾压式地显著提高了执行效率，结果令你大失所望，并没有，起码在筛选后的数据处于万级以下是没有的，而且代码好难看，毕竟如果 SQL 好看，那么我们应该抛弃一切影响效率的 ORM，在代码中全部使用 raw SQL 语句了。显而易见地，为了并不知道有多少提升而无脑地进行所谓的效率优化，让我们失去了更多。</p>
 <h6 id="深度"><a href="#深度" class="headerlink" title="深度"></a>深度</h6><p>winter 还没有自大地撕王垠、离开知乎之前，其实还是有一些可以看的答案的，比如：</p>
 <blockquote>
 <p>「答题基本只说一个名词，问深了得不到答案，挑战你的时候，又会快速推翻自己的结论，说做优化，又语焉不详，说不出来」</p>

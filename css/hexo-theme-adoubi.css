@@ -291,7 +291,7 @@ a {
 .header__archive__image {
   height: 55px;
   margin: 10px;
-  background-image: url("https://devimages.apple.com.edgekey.net/develop/images/icon-api.svg");
+  background-image: url("http://obfnm2kw5.bkt.clouddn.com/icon-api.svg");
   background-repeat: no-repeat;
 }
 .header__archive__title {
@@ -322,7 +322,7 @@ a {
   height: 55px;
   margin: 10px;
   background-repeat: no-repeat;
-  background-image: url("https://devimages.apple.com.edgekey.net/develop/images/icon-sample-code.svg");
+  background-image: url("http://obfnm2kw5.bkt.clouddn.com/icon-sample-code.svg");
 }
 .header__about__title {
   margin-left: 20px;
