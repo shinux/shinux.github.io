@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-12-17T09:33:37.000Z</updated>
+  <updated>2016-12-17T10:45:29.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,13 +20,13 @@
     <link href="http://yoursite.com/2016/12/17/iterative_to_recursive/"/>
     <id>http://yoursite.com/2016/12/17/iterative_to_recursive/</id>
     <published>2016-12-17T15:46:16.000Z</published>
-    <updated>2016-12-17T09:33:37.000Z</updated>
+    <updated>2016-12-17T10:45:29.000Z</updated>
     
     <content type="html"><![CDATA[<p>powerset 翻译成中文似乎是幂集，密集恐惧症患者搜索的时候要小心搜索引擎动态加载出来的图片。</p>
 <blockquote>
 <p>用 Racket 递归实现 powerset , 顺序随意。</p>
 </blockquote>
-<p>如果说 reduce 是一种向左折叠的操作，powerset 就有点类似的向右展开，首先想到的是用 Python 实现:</p>
+<p>如果说 reduce 是一种折叠操作，powerset 就有点类似向右展开的操作，首先想到的是用 Python 实现:</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">powerset</span><span class="params">(_list)</span>:</span></div><div class="line">    result = [[]]</div><div class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> _list:</div><div class="line">        result.extend([_set + [x] <span class="keyword">for</span> _set <span class="keyword">in</span> result])</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
 <p>太美了……当然题目要求用 Racket ，而且要求使用递归，而不是循环。</p>
 <p>所以先翻译成循环的 Racket 版本:</p>
@@ -46,7 +46,7 @@
 &lt;blockquote&gt;
 &lt;p&gt;用 Racket 递归实现 powerset , 顺序随意。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;如果说 reduce 是一种向
+&lt;p&gt;如果说 reduce 是一种折
     
     </summary>
     
