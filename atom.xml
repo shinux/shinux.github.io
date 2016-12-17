@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-12-01T05:27:02.000Z</updated>
+  <updated>2016-12-17T09:33:37.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,44 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Iterative to Recursive</title>
+    <link href="http://yoursite.com/2016/12/17/iterative_to_recursive/"/>
+    <id>http://yoursite.com/2016/12/17/iterative_to_recursive/</id>
+    <published>2016-12-17T15:46:16.000Z</published>
+    <updated>2016-12-17T09:33:37.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>powerset 翻译成中文似乎是幂集，密集恐惧症患者搜索的时候要小心搜索引擎动态加载出来的图片。</p>
+<blockquote>
+<p>用 Racket 递归实现 powerset , 顺序随意。</p>
+</blockquote>
+<p>如果说 reduce 是一种向左折叠的操作，powerset 就有点类似的向右展开，首先想到的是用 Python 实现:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">powerset</span><span class="params">(_list)</span>:</span></div><div class="line">    result = [[]]</div><div class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> _list:</div><div class="line">        result.extend([_set + [x] <span class="keyword">for</span> _set <span class="keyword">in</span> result])</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
+<p>太美了……当然题目要求用 Racket ，而且要求使用递归，而不是循环。</p>
+<p>所以先翻译成循环的 Racket 版本:</p>
+<figure class="highlight scheme"><table><tr><td class="code"><pre><div class="line">(<span class="name"><span class="builtin-name">define</span></span> (<span class="name">powerset</span> l)</div><div class="line">  (<span class="name"><span class="builtin-name">define</span></span> result '(()))</div><div class="line">  (<span class="name">for</span> ([<span class="name">x</span> l])</div><div class="line">    (<span class="name"><span class="builtin-name">let</span></span> ([<span class="name">temp-l</span> '()])</div><div class="line">      (<span class="name">for</span> ([<span class="name">y</span> result])</div><div class="line">        (<span class="name"><span class="builtin-name">set!</span></span> temp-l (<span class="name"><span class="builtin-name">append</span></span> temp-l (<span class="name"><span class="builtin-name">list</span></span> (<span class="name"><span class="builtin-name">append</span></span> y (<span class="name"><span class="builtin-name">list</span></span> x))))))</div><div class="line">      (<span class="name"><span class="builtin-name">set!</span></span> result (<span class="name"><span class="builtin-name">append</span></span> result temp-l))))</div><div class="line">  result)</div></pre></td></tr></table></figure>
+<p>基本上就是剥离了 list.extend 和 list comprehension 等 Python 内置方法，用 Racket 重写了一遍。其实循环挺好的，（对我来说）大部分场景比递归更直观，而且由于 Python 没有尾递归优化，导致我在很长一段的时间里不敢轻易在 Python 中使用递归233333。</p>
+<p>把上面的循环改写成递归：</p>
+<figure class="highlight scheme"><table><tr><td class="code"><pre><div class="line">(<span class="name"><span class="builtin-name">define</span></span> (<span class="name">powerset</span> l [<span class="name">result</span> '(())])</div><div class="line">  (<span class="name"><span class="builtin-name">if</span></span> (<span class="name"><span class="builtin-name">null?</span></span> l) result</div><div class="line">      (<span class="name"><span class="builtin-name">let</span></span> ([<span class="name">temp-l</span> '()])</div><div class="line">        (<span class="name">for</span> ([<span class="name">y</span> result])</div><div class="line">          (<span class="name"><span class="builtin-name">set!</span></span> temp-l (<span class="name"><span class="builtin-name">append</span></span> temp-l (<span class="name"><span class="builtin-name">list</span></span> (<span class="name"><span class="builtin-name">append</span></span> y (<span class="name"><span class="builtin-name">list</span></span> (<span class="name"><span class="builtin-name">car</span></span> l)))))))</div><div class="line">        (<span class="name"><span class="builtin-name">set!</span></span> result (<span class="name"><span class="builtin-name">append</span></span> result temp-l))</div><div class="line">        (<span class="name">powerset</span> (<span class="name"><span class="builtin-name">cdr</span></span> l) result))))</div></pre></td></tr></table></figure>
+<p>循环和尾递归的互相转换是比较平滑的，这段尾递归代码就是我的最终答案，虽然中间还是用了一次 for ，但是这里无论用 for，还是用 map + lambda 都不能改变 powerset O(2^N) 最小时间复杂度的本质。</p>
+<p>最后再看一看别人对这道题的答案，有一些代码又短又帅，可惜使用的是线性递归，例如:</p>
+<figure class="highlight scheme"><table><tr><td class="code"><pre><div class="line">(<span class="name"><span class="builtin-name">define</span></span> (<span class="name">powerset</span> lst)</div><div class="line">  (<span class="name"><span class="builtin-name">if</span></span> (<span class="name"><span class="builtin-name">null?</span></span> lst)</div><div class="line">      '(())</div><div class="line">      (<span class="name">append-map</span> (<span class="name"><span class="builtin-name">lambda</span></span> (x)</div><div class="line">                    (<span class="name"><span class="builtin-name">list</span></span> x (<span class="name"><span class="builtin-name">cons</span></span> (<span class="name"><span class="builtin-name">car</span></span> lst) x)))</div><div class="line">                  (<span class="name">powerset</span> (<span class="name"><span class="builtin-name">cdr</span></span> lst))))</div></pre></td></tr></table></figure>
+<p>这种无比好看又容易爆栈的代码我凭第一直觉是绝对写不出来的，但是它们看上去真的很酷很干练。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;powerset 翻译成中文似乎是幂集，密集恐惧症患者搜索的时候要小心搜索引擎动态加载出来的图片。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;用 Racket 递归实现 powerset , 顺序随意。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果说 reduce 是一种向
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Overkill for small efficiencies</title>
@@ -78,37 +116,6 @@
     
       &lt;p&gt;以下内容基于 Elasticsearch 2.0.1 。&lt;/p&gt;
 &lt;p&gt;首先是 &lt;code&gt;or filter&lt;/code&gt; 已经变成了 &lt;code&gt;bool&lt;/code&gt; ，它是专门用来合并 queries ，支持 or、and、not 这类操作符的，大概相当于 &lt;cod
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="http://yoursite.com/2016/10/28/hello-world/"/>
-    <id>http://yoursite.com/2016/10/28/hello-world/</id>
-    <published>2016-10-28T07:46:16.000Z</published>
-    <updated>2016-11-03T08:12:23.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><p><code>bash
-$ hexo new &quot;My New Post&quot;</code></p>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><p><code>bash
-$ hexo server</code></p>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><p><code>bash
-$ hexo generate</code></p>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><p><code>bash
-$ hexo deploy</code></p>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a>`</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
     
     </summary>
     

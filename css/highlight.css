@@ -105,7 +105,8 @@ pre .built_in,
 pre .literal,
 pre .params,
 pre .constant,
-pre .command {
+pre .command,
+pre .builtin-name {
   color: #f5871f;
 }
 pre .ruby .class .title,
