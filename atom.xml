@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-01-05T10:24:13.000Z</updated>
+  <updated>2017-03-03T12:33:51.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,11 +16,40 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>升级 elasticsearch 带来的一些小问题和思考</title>
+    <link href="http://yoursite.com/2017/03/03/some_issues_regarding_uprade_elasticsearch/"/>
+    <id>http://yoursite.com/2017/03/03/some_issues_regarding_uprade_elasticsearch/</id>
+    <published>2017-03-03T15:46:16.000Z</published>
+    <updated>2017-03-03T12:33:51.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="script-language"><a href="#script-language" class="headerlink" title="script language"></a>script language</h3><p>从 2.0.1 升级到 5.1.1 有一阵子了，今天发现了一个存在比较久的问题，就是诸如 update 包括 bulk update 操作，不能被正常的执行。问题集中在那些在 body 中使用 script 的 query，而直接全文更新的则没有问题。例如，对 list 类型的 document 进行局部更新:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">POST index/type/id/_update</div><div class="line">&#123;</div><div class="line">    &quot;script&quot;: &quot;ctx._source.tags -= tag&quot;,</div><div class="line">    &quot;params&quot; : &#123;</div><div class="line">        &quot;tag&quot; : &quot;blue&quot;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样的使用在 2.0.1 中（包括 Python 和 JavaScript port）是没问题的，然而在 5.x 中却报错：<code>Variable [tag] is not defined.</code> 无法执行这个 script，后来发现了 default lang 是 painless ，而 painless 的取值需要携带 key ，即 params.tag 这样才可以正常找到值。那么 groovy 为什么不再是 default 还被新版本中标记为 deprecated 了呢……要知道 groovy 之前替换掉 mvel 的理由是足够快而且简单……</p>
+<p>先说一下什么是 sandboxed language </p>
+<blockquote>
+<p>沙盒是在受限的安全环境中运行应用程序的一种做法，这种做法是要限制授予应用程序的代码访问权限。</p>
+</blockquote>
+<p>像 groovy 和 JavaScript 这类脚本语言它们本身都不是 sandboxed，它们可以做很多系统级别的不止是读写、网络请求的操作，这样就给基于 JAVA 并且在运行中默认开启<a href="https://docs.oracle.com/javase/tutorial/essential/environment/security.html" target="_blank" rel="external">The Security Manager</a> elasticsearch 带来很大安全问题，比如在脚本中随便加一句 infinite loop ，服务器可能就表现成拒绝访问的状态，所以在之前的版本中 elasticsearch 为 groovy 加入了沙盒控制一些权限，然而后面由于权限限制不够，还是出现了一些问题23333。elasticsearch script 的来源，可以是 inline、store 、还有 file，前两个就不说了，一个是 query 中直接写进去的像我上面的例子，另一个也是以数据的形式存在某个 cluster state 的 _script 节点下，而 file 的形式是配置在 elasticsearch 的 config 文件夹中，所以从安全的角度，elasticsearch 5.x 虽然仍然内置 groovy ，但是只对 file script 默认允许执行 groovy 。</p>
+<p>至于开头那种，如果不考虑安全性，例如默认我们的 elasticsearch 运行与一个相对隔离的环境下，如果还想用 inline groovy ，就可以为 groovy 单独开启一个配置 <code>script.engine.groovy.inline: true</code> 或者针对所有 inline script <code>script.inline: true</code>，那么上面的 query 就可以变成：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">POST index/type/id/_update</div><div class="line">&#123;</div><div class="line">    &quot;script&quot; :&#123;</div><div class="line">      &quot;inline&quot;: &quot;ctx._source.tags -= tag&quot;,</div><div class="line">      &quot;lang&quot;: &quot;groovy&quot;,</div><div class="line">      &quot;params&quot; : &#123;</div><div class="line">          &quot;tag&quot; : &quot;blue&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>等 painless 相对稳定了，直接切换过去就可以了，毕竟语法都类似，而且还安全。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;script-language&quot;&gt;&lt;a href=&quot;#script-language&quot; class=&quot;headerlink&quot; title=&quot;script language&quot;&gt;&lt;/a&gt;script language&lt;/h3&gt;&lt;p&gt;从 2.0.1 升级到 5.1.1 
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>2016 年书单</title>
     <link href="http://yoursite.com/2017/01/05/2016_book_list/"/>
     <id>http://yoursite.com/2017/01/05/2016_book_list/</id>
     <published>2017-01-05T15:46:16.000Z</published>
-    <updated>2017-01-05T10:24:13.000Z</updated>
+    <updated>2017-01-05T11:09:04.000Z</updated>
     
     <content type="html"><![CDATA[<ul>
 <li><p><strong>《白夜行》</strong>年初在豆瓣阅读看的，算是对之前纸质书的填坑吧，构思无懈可击，看完一身冷汗，可是冷静之后，在道德上还是无法接受两位主角的行径。</p>
