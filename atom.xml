@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-03-21T05:15:47.000Z</updated>
+  <updated>2017-03-22T09:25:07.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,41 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>elasticsearch upgrade notes</title>
+    <link href="http://yoursite.com/2017/03/22/upgrade_elasticsearch_note/"/>
+    <id>http://yoursite.com/2017/03/22/upgrade_elasticsearch_note/</id>
+    <published>2017-03-22T15:46:16.000Z</published>
+    <updated>2017-03-22T09:25:07.000Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="Download"><a href="#Download" class="headerlink" title="Download"></a>Download</h4><ul>
+<li>本地下载 elasticsearch 新版本，传到服务器上解压，同时 chown -R 整个文件夹权限为非 root</li>
+<li>所有 plugins checkout 到新版本，编译打包，然后 scp 上传到新版 elasticsearch 的 plugins 中并解压</li>
+</ul>
+<h4 id="Migration"><a href="#Migration" class="headerlink" title="Migration"></a>Migration</h4><ul>
+<li>这两步<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-upgrade.html" target="_blank" rel="external">严格按照文档</a>，disable shard allocation 和 synced flush，方便到新的集群中快速 recovery</li>
+<li>停掉旧版本的 cluster</li>
+<li>完整 copy data 文件夹到新版本的文件夹中去</li>
+<li>config/elasticsearch.yml 需要针对新版本做出调整</li>
+</ul>
+<h4 id="Run"><a href="#Run" class="headerlink" title="Run"></a>Run</h4><ul>
+<li>开启新版 elasticsearch ，同时 enable shard allocation</li>
+<li>open all indices: <code>curl -XPOST &quot;http://localhost:9200/_all/_open&quot;</code></li>
+<li>等待 shard recovery，在 synced flush 的帮助下这步不会太久</li>
+</ul>
+<p>从 2.0 -&gt; 5.2 整体来说没有想象中那么困难，当然原本的环境就是单点大法…所以过程比较顺畅，有一些小坑，错误都比较明显。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;Download&quot;&gt;&lt;a href=&quot;#Download&quot; class=&quot;headerlink&quot; title=&quot;Download&quot;&gt;&lt;/a&gt;Download&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;本地下载 elasticsearch 新版本，传到服务器上解压，同时 chown
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Some issues regarding upgrade elasticsearch</title>
