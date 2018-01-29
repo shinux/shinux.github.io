@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-07-13T17:00:05.000Z</updated>
+  <updated>2017-03-22T09:44:12.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,62 +14,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>vue-tornado-boilerplate</title>
-    <link href="http://yoursite.com/2017/07/13/vue-tornado-boilerplate/"/>
-    <id>http://yoursite.com/2017/07/13/vue-tornado-boilerplate/</id>
-    <published>2017-07-13T15:46:16.000Z</published>
-    <updated>2017-07-13T17:00:05.000Z</updated>
-    
-    <content type="html"><![CDATA[<h6 id="boilerplate"><a href="#boilerplate" class="headerlink" title="boilerplate"></a>boilerplate</h6><p>一开不明白茫茫 repo 海中的那些以各种方式组合起来的 boilerplate 的意义。直到我从零开始写一个稍微跟得上前端发展节奏的 web 项目……</p>
-<p>boilerplate 代表着在熟悉前后端技术的基础上，不必再费心那些如何编译、打包、访问资源、前后端如何通信、谁来 render 、跑不起来等等很基础重复性很强的问题，从而更专注于开发自己要做的内容。类似一个固定选型的本地加强版 jsfiddle 之类的东西吧。</p>
-<h6 id="vue-tornado-boilerplate"><a href="#vue-tornado-boilerplate" class="headerlink" title="vue-tornado-boilerplate"></a>vue-tornado-boilerplate</h6><p>在开发 web app 时，用惯了 Node.JS ，天然享用这些年前端发展出来的一切工具。考虑其他语言作为后端时，显得有点捉襟见肘，总不能倒退到继续使用某些后端 web framework 自带的模板语言吧。</p>
-<p>用 tornado 不是看上它作为 web framework 的部分（恰恰很多友库是更完备的），而是它身为 http server 的那部分 async 和 concurrency 特性。<a href="https://github.com/channelcat/sanic" target="_blank" rel="external">相关：sanic</a> </p>
-<p>至于前端用了 Vue ，替换成其他任意框架或者不用框架都行，取决怎么样写起来更适应场景更顺手，目前整体是一个 SPA 的形式。</p>
-<p>正常前端打包完毕在 html 中加载 bundle.js 然后直接跑后端 server 这里都是一样的。只是在本地开发的场景下，对用采用哪种方式跑 webpack-dev-server 有一点顾虑，一开始比较抵触跑两个 server 占用不同端口，然后跨端口去调用资源……（似乎也没有别的办法了？），最后索性让 webpack-dev-server 跑在 80 端口，也就没什么跨域请求的问题了。</p>
-<p>剩下一些就是工程上的优化和 lint 相关的内容了，还是拿这个继续做点东西出来吧。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h6 id=&quot;boilerplate&quot;&gt;&lt;a href=&quot;#boilerplate&quot; class=&quot;headerlink&quot; title=&quot;boilerplate&quot;&gt;&lt;/a&gt;boilerplate&lt;/h6&gt;&lt;p&gt;一开不明白茫茫 repo 海中的那些以各种方式组合起来的 boile
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>hexo-theme-adoubi 更新</title>
-    <link href="http://yoursite.com/2017/05/12/upgrade-hexo-theme-adoubi/"/>
-    <id>http://yoursite.com/2017/05/12/upgrade-hexo-theme-adoubi/</id>
-    <published>2017-05-12T15:46:16.000Z</published>
-    <updated>2017-05-12T05:57:52.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>更新了一下自己用的 hexo 主题：adoubi 。</p>
-<h6 id="去除导航条"><a href="#去除导航条" class="headerlink" title="去除导航条"></a>去除导航条</h6><p>主要思路是去掉上方和整个主题毫不相关的那条又黑又宽的导航条，它出现的主要原因是当时借鉴于 <a href="https://developer.apple.com/develop" target="_blank" rel="external">https://developer.apple.com/develop/</a> 这个页面，连字体闪烁和图标的颜色几乎都是一样的，后来我越看它越不顺眼，这次就去掉了。</p>
-<p>去掉导航条自然也就去掉了左上角的 Logo ，带有鲜明的个人色彩的一张很不清晰的 svg ，作为一个博客主题，有 Logo 却没有提供更换的方式，这种不能即插即用的主题摆明了就是坑人，不过当时是想给自己用，所以也没想那么多，直接写进了 css 。</p>
-<p>当然我认为自己的技术博客，是不需要 Logo 和名字这些东西的，如果可以，域名应该可以代表一切了。一些常见的诸如xx后花园、xx手记、xx的博客、<a href="https://sebastianblade.com/" target="_blank" rel="external">小钻风的自留地</a>这样千篇一律名字也不会给人任何好感，除非是“当然我在扯淡”这样的博客名字，可能会让人印象深刻，多半也还是靠作者的名气和频繁更新的高质量文章带来的。</p>
-<p>去除导航条自然就去除了一些本来就不是很齐全的功能：</p>
-<ul>
-<li>前往其他链接的方式，比如 About ，比如 GitHub 链接</li>
-<li>回到主页/列表页没有了可以点选的地方，现在只能依靠浏览器的后退了</li>
-</ul>
-<p>当然这些都不重要，核心的只有文章列表和文章。</p>
-<h6 id="去掉了时间"><a href="#去掉了时间" class="headerlink" title="去掉了时间"></a>去掉了时间</h6><p>文章列表页每一篇文章前面的日期被我去掉了，由于没有使用等宽字体，导致日期在列表页看起来很扭曲，索性就去掉了。当然日期还是很重要的，如果你写了一篇解决什么 bug 的文章，别人不小心搜到了还看了很久，最后却发现由于时间久远，这些内容早就不可用了，就会很恼火。所以我在文章页面还是保留了日期的展示（当然通过看 url 也是可以的，只是没有那么直观），这样可以方便读者决定这篇文章是否值得一读。我现在遇到问题去搜索的时候就几乎无视日期是几年前的东西了。</p>
-<h6 id="feed"><a href="#feed" class="headerlink" title="feed"></a>feed</h6><p>不太相信有人会订阅一个好久都不更新的博客。但是 feed 还是有它的意义的，只是没必要标示的那么明显了，把它放到一个“想用稍微找一下就可以找到的位置”就可以了。由于导航栏的消失，我就把 feed 链接直接挪到了底部的 copyright 区域，加了一个印章一样很精致的图片，设置得很小，所以几乎没有影响底部原本的状态。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;更新了一下自己用的 hexo 主题：adoubi 。&lt;/p&gt;
-&lt;h6 id=&quot;去除导航条&quot;&gt;&lt;a href=&quot;#去除导航条&quot; class=&quot;headerlink&quot; title=&quot;去除导航条&quot;&gt;&lt;/a&gt;去除导航条&lt;/h6&gt;&lt;p&gt;主要思路是去掉上方和整个主题毫不相关的那条又黑又
-    
-    </summary>
-    
-    
-  </entry>
   
   <entry>
     <title>elasticsearch upgrade notes</title>
@@ -135,61 +79,6 @@
     <summary type="html">
     
       &lt;h3 id=&quot;script-language&quot;&gt;&lt;a href=&quot;#script-language&quot; class=&quot;headerlink&quot; title=&quot;script language&quot;&gt;&lt;/a&gt;script language&lt;/h3&gt;&lt;p&gt;从 2.0.1 升级到 5.1.1 
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>2016 年书单</title>
-    <link href="http://yoursite.com/2017/01/05/2016_book_list/"/>
-    <id>http://yoursite.com/2017/01/05/2016_book_list/</id>
-    <published>2017-01-05T15:46:16.000Z</published>
-    <updated>2017-01-05T11:09:04.000Z</updated>
-    
-    <content type="html"><![CDATA[<ul>
-<li><p><strong>《白夜行》</strong>年初在豆瓣阅读看的，算是对之前纸质书的填坑吧，构思无懈可击，看完一身冷汗，可是冷静之后，在道德上还是无法接受两位主角的行径。</p>
-</li>
-<li><p><strong>《The Journey of Man: A Genetic Odyssey》</strong> 关于你我的祖先，收不到任何原版书，最后泛读了一下网上盗印的 pdf 。</p>
-</li>
-<li><p><strong>《公正》</strong> 这本书会教人轻易看穿那些从狭隘角度出发强行安利伪公正还自以为是的选手们。</p>
-</li>
-<li><p><strong>《小顾聊绘画·壹》《小顾聊绘画·贰》</strong> 穿蓝裙绿袜站立的女孩 和 戴珍珠耳环的少女。</p>
-</li>
-<li><p><strong>《高性能Linux服务器构建实战 : 系统安全、故障排查、自动化运维与集群架构》</strong> 腊鸡。</p>
-</li>
-<li><p><strong>《年少荒唐》</strong> 被青海湖那段感动哭了，很遗憾，书中夹了一部分知乎答案和不明就里的文章。</p>
-</li>
-<li><p><strong>《400次 : 女生必看的大姨妈圣经》</strong> This is what you really love, my young man, but you do not love beauty for its own sake.</p>
-</li>
-<li><p><strong>《月亮和六便士》</strong> 聪明人不会把自己放置在一个对自己不利的局面中，无论环境是什么样的。</p>
-</li>
-<li><p><strong>《黑客与画家 : 硅谷创业之父Paul Graham文集》</strong> 冲着名气和有人说作者在书中推荐 Lisp 而来，然而大部分内容很让人失望，完全对不上名气。</p>
-</li>
-<li><p><strong>《乌合之众 : 大众心理研究》</strong></p>
-</li>
-<li><p><strong>《男人这东西》</strong> 再考虑《金阁寺》中的一些场景，让我感觉所有日本男人的想法都很古怪。</p>
-</li>
-<li><p><strong>《MacTalk 人生元编程》</strong> 腊鸡。</p>
-</li>
-<li><p><strong>《十八岁给我一个姑娘》</strong> 除非那些场面都是真实存在的，否则能正常描写却用脏话贯穿只会让人感觉恶心。</p>
-</li>
-<li><p><strong>《阿尔萨斯：巫妖王的崛起》</strong> 一生挚爱的游戏。</p>
-</li>
-<li><p><strong>《分成两半的子爵》《不存在的骑士》</strong> 很可惜《树上的男爵》只看了前几章，后来偶然发现卡尔维诺中文站和很多短文都是阮一峰翻译的，厉害。</p>
-</li>
-<li><p><strong>《手冲一杯好咖啡》</strong> 科普小读物，配图也很可爱，5分钟就能读完啦。</p>
-</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;《白夜行》&lt;/strong&gt;年初在豆瓣阅读看的，算是对之前纸质书的填坑吧，构思无懈可击，看完一身冷汗，可是冷静之后，在道德上还是无法接受两位主角的行径。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;《The Journey of Ma
     
     </summary>
     
