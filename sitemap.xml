@@ -2,9 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yoursite.com/2018/07/17/migrate_es/</loc>
+    <loc>http://yoursite.com/2016/11/16/elasticsearch/</loc>
     
-    <lastmod>2018-07-18T08:32:00.187Z</lastmod>
+    <lastmod>2019-02-17T12:18:36.414Z</lastmod>
     
   </url>
   
@@ -16,30 +16,9 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2017/03/22/upgrade_elasticsearch_note/</loc>
-    
-    <lastmod>2017-03-22T09:44:12.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2017/03/03/some_issues_regarding_uprade_elasticsearch/</loc>
-    
-    <lastmod>2017-03-21T05:15:47.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/about/index.html</loc>
     
     <lastmod>2016-12-06T08:44:16.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2016/11/16/implement_or_operator_in_elasticsearch/</loc>
-    
-    <lastmod>2016-11-24T06:57:56.000Z</lastmod>
     
   </url>
   

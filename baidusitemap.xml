@@ -1,67 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-
-    
   <url>
-    <loc>http://yoursite.com/2018/07/17/migrate_es/</loc>
-    <lastmod>2018-07-18T08:32:00.187Z</lastmod>
-    <data>
-        <display>
-        <title>elasticsearch migrate data.</title>
-        <pubTime>2018-07-17T15:46:16.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-    
-  <url>
-    <loc>http://yoursite.com/2017/03/22/upgrade_elasticsearch_note/</loc>
-    <lastmod>2017-03-22T09:44:12.000Z</lastmod>
-    <data>
-        <display>
-        <title>elasticsearch upgrade notes</title>
-        <pubTime>2017-03-22T15:46:16.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>http://yoursite.com/2017/03/03/some_issues_regarding_uprade_elasticsearch/</loc>
-    <lastmod>2017-03-21T05:15:47.000Z</lastmod>
-    <data>
-        <display>
-        <title>Some issues regarding upgrade elasticsearch</title>
-        <pubTime>2017-03-03T15:46:16.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-    
-  <url>
-    <loc>http://yoursite.com/2016/11/16/implement_or_operator_in_elasticsearch/</loc>
-    <lastmod>2016-11-24T06:57:56.000Z</lastmod>
-    <data>
-        <display>
-        <title>Implement "or" operator in Elasticsearch</title>
-        <pubTime>2016-11-16T07:46:16.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
+    <loc>http://yoursite.com/2016/11/16/elasticsearch/</loc>
+    <lastmod>2019-02-17</lastmod>
+  </url>
 </urlset>
