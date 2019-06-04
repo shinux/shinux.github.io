@@ -12,7 +12,7 @@
 <p>保持所有 query 包裹在 bool 中，把上面的两个变量用在 POST body 中，curl 同理:</p>
 <figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"index"</span>: <span class="string">"index"</span>,</span><br><span class="line">    <span class="attr">"from"</span>: <span class="number">11</span>,</span><br><span class="line">    <span class="attr">"size"</span>: <span class="number">20</span>,</span><br><span class="line">    <span class="attr">"_source"</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">"body"</span>: &#123;</span><br><span class="line">        <span class="attr">"query"</span>: &#123;</span><br><span class="line">            <span class="attr">"bool"</span>: &#123;</span><br><span class="line">            <span class="attr">"should"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"terms"</span>: &#123;</span><br><span class="line">                        <span class="attr">"tags"</span>: queries,</span><br><span class="line">                    &#125;,</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"query_string"</span>: &#123;</span><br><span class="line">                        <span class="attr">"query"</span>: queryString,</span><br><span class="line">                        <span class="attr">"fields"</span>: [<span class="string">"name^5"</span>, <span class="string">"name.analyzed^5"</span>, <span class="string">"email"</span>, <span class="string">"phone"</span>, <span class="string">"content"</span>],</span><br><span class="line">                        <span class="attr">"analyzer"</span>: <span class="string">"whitespace"</span>,</span><br><span class="line">                    &#125;,</span><br><span class="line">                &#125;,</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"minimum_should_match"</span>: <span class="number">1</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"highlight"</span>: &#123;</span><br><span class="line">            <span class="attr">"fields"</span>: &#123;</span><br><span class="line">                "content": &#123; fragment_size: 18, number_of_fragments: 1 &#125;,</span><br><span class="line">                <span class="string">"name: &#123;&#125;,</span></span><br><span class="line">                "name.analyzed": &#123;&#125;,</span><br><span class="line">                "tags": &#123;&#125;,</span><br><span class="line">                "email": &#123;&#125;,</span><br><span class="line">                "phone": &#123;&#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>note: <code>minimum_should_match</code> may not be available in some version of elasticsearch.</p>
-<h2 id="es-升级"><a href="#es-升级" class="headerlink" title="es 升级"></a>es 升级</h2><h4 id="Download"><a href="#Download" class="headerlink" title="Download"></a>Download</h4><ul>
+<h2 id="es-版本升级"><a href="#es-版本升级" class="headerlink" title="es 版本升级"></a>es 版本升级</h2><h4 id="Download"><a href="#Download" class="headerlink" title="Download"></a>Download</h4><ul>
 <li>本地下载 elasticsearch 新版本，传到服务器上解压，同时 chown -R 整个文件夹拥有者为非 root</li>
 <li>所有 plugins checkout 到新版本，重新编译打包，例如 ik，然后 scp 上传到新版 elasticsearch 的 plugins 中并解压</li>
 </ul>
@@ -28,6 +28,7 @@
 <li>等待 shard recovery，在 synced flush 的帮助下这步不会太久</li>
 </ul>
 <p>从 2.0 -&gt; 5.2 整体来说没有想象中那么困难，当然原本的环境就是单点大法…所以过程比较顺畅，有一些小坑，错误都比较明显。</p>
+<p>Referrer: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.3/setup-upgrade.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/6.3/setup-upgrade.html</a></p>
 <h2 id="es-从单机到集群"><a href="#es-从单机到集群" class="headerlink" title="es 从单机到集群"></a>es 从单机到集群</h2><h4 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h4><ul>
 <li>数据增长过快，原有服务器磁盘不足，而云服务器磁盘不支持不停机升级</li>
 <li>依赖 es 的增删改查的 HTTP 请求频繁，希望 migration 过程能做到 zero downtime</li>
@@ -64,4 +65,25 @@ network.host: [&quot;10.30.55.37&quot;, _local_]
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;script&quot;: &#123;</span><br><span class="line">    &quot;inline&quot;: &quot;ctx._source.tags += tag&quot;,</span><br><span class="line">    &quot;lang&quot;: &quot;groovy&quot;,</span><br><span class="line">    &quot;params&quot;: &#123;</span><br><span class="line">      &quot;tag&quot;: &quot;皮皮虾&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;upsert&quot;: &#123;</span><br><span class="line">    &quot;tags&quot;: [&quot;皮皮虾&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然而 script 总是执行而 upsert 不执行，原因是 document 已经存在了，这个 upsert 只是针对当 document 不存在时，所以还是要把逻辑做在 script 中:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;script&quot;: &#123;</span><br><span class="line">    &quot;inline&quot;: &quot;if (ctx._source.tags) &#123;ctx._source.tags += tag;&#125; else &#123;ctx._source.tags = [tag]&#125;&quot;,</span><br><span class="line">    &quot;lang&quot;: &quot;groovy&quot;,</span><br><span class="line">    &quot;params&quot;: &#123;</span><br><span class="line">      &quot;tag&quot;: &quot;皮皮虾&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="重启集群节点"><a href="#重启集群节点" class="headerlink" title="重启集群节点"></a>重启集群节点</h2><p>（以下内容出现的部分流程和命令可以在 《ELASTICSEARCH 源码解析与优化实战》中找到详细的解释，部分内容依据我们的业务场景、部署方式、机器规格有额外的修改）</p>
+<p>由于机器升级或某个节点出现了问题，需要执行重启的操作。但是直接重启会引发新插入更新的文档和重启节点的版本不匹配触发全局的 allocation 导致部分 indices 在 recovery 过程中长时间不可用。所以比较平滑的重启方法（rolling restart）如下：</p>
+<ol>
+<li><p>检查集群的状态，不太建议在红色状态下重启，至少是黄绿状态最好 primary shards 都是可用的状态</p>
+</li>
+<li><p>停止切片分配</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -XPUT localhost:9200/_cluster/settings -d '&#123;"transient":&#123;"cluster.routing.allocation.enable": "none"&#125;&#125;'</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行 synced flush，解决副本分片恢复慢的问题</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -X POST "localhost:9200/_flush/synced"</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启节点</p>
+</li>
+<li><p>调整分片的限速，这一步考虑集群的配置，主要是内存和带宽</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -X PUT "localhost:9200/_cluster/settings?flat_settings=true" -H 'Content-Type: application/json' -d'&#123;"transient" : &#123;"indices.recovery.max_bytes_per_sec" : "300mb"&#125;&#125;'</span><br><span class="line">curl -X PUT "localhost:9200/_cluster/settings?flat_settings=true" -H 'Content-Type: application/json' -d'&#123;"transient" : &#123;"cluster.routing.allocation.node_concurrent_recoveries" : "100"&#125;&#125;'</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开启切片分配</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -XPUT localhost:9200/_cluster/settings -d '&#123;"transient":&#123;"cluster.routing.allocation.enable": "all"&#125;&#125;'</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>等待切片分配完成，期间观察集群的可用状态。</p>
 </div></div><div class="footer"><div class="footer-copyright">Theme By <a href="https://github.com/shinux/hexo-theme-adoubi">Adoubi</a> , Powered By Hexo.</div></div></body></html>
