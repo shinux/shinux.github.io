@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2019/11/08/OQL_JavaCC/</loc>
+    
+    <lastmod>2019-11-08T08:31:03.165Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2016/11/16/elasticsearch/</loc>
     
-    <lastmod>2019-06-04T11:13:32.666Z</lastmod>
+    <lastmod>2019-11-08T08:15:01.332Z</lastmod>
     
   </url>
   

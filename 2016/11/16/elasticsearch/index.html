@@ -41,7 +41,7 @@
 <p><a href="https://blog.engineering.ticketbis.com/elasticsearch-cluster-migration-without-downtime/" target="_blank" rel="noopener">https://blog.engineering.ticketbis.com/elasticsearch-cluster-migration-without-downtime/</a><br><a href="https://thoughts.t37.net/migrating-a-130tb-cluster-from-elasticsearch-2-to-5-in-20-hours-with-0-downtime-and-a-rollback-39b4b4f29119" target="_blank" rel="noopener">https://thoughts.t37.net/migrating-a-130tb-cluster-from-elasticsearch-2-to-5-in-20-hours-with-0-downtime-and-a-rollback-39b4b4f29119</a></p>
 <p>多半离不开版本号和更新时间这两个字段，迁移过程区分迁移前的数据和迁移过程中新增的数据，在迁移完毕时把新数据再同步一次，这就要求数据只有 create 没有 update 操作在迁移过程中发生，感觉不太适合除了自增类型的例如日志以外的其他业务逻辑。</p>
 <p>关于集群，需要至少3个 master eligible node 以防止脑裂，并把其中两个设置为 data node 承载数据，在磁盘的扩充过程中给每个节点挂载数据盘，方便日后扩容。</p>
-<p><img src="http://obfnm2kw5.bkt.clouddn.com/clients.png"></p>
+<p><img src="/images/cluster.png"></p>
 <p>以其中一个节点为例，几个比较重要的配置是</p>
 <pre><code>discovery.zen.ping.unicast.hosts: [&quot;10.66.90.77:9300&quot;, &quot;10.66.91.150:9300&quot;, &quot;10.30.55.37:9300&quot;]
 network.host: [&quot;10.30.55.37&quot;, _local_]
