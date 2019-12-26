@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-11-08T08:31:03.165Z</updated>
+  <updated>2019-12-26T03:48:14.744Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -21,17 +21,17 @@
     <link href="http://yoursite.com/2019/11/08/OQL_JavaCC/"/>
     <id>http://yoursite.com/2019/11/08/OQL_JavaCC/</id>
     <published>2019-11-08T07:46:16.000Z</published>
-    <updated>2019-11-08T08:31:03.165Z</updated>
+    <updated>2019-12-26T03:48:14.744Z</updated>
     
-    <content type="html"><![CDATA[<p><img src="/images/OQL_JavaCC.png"></p><p>Can’t upload demo due to demo code is already running on my company’s production.</p><p>Though JavaCC is a compiler compiler or parser generator, I regard it as a compiler frontend which IR is merely Java.</p><p>For the next few weeks, I’m going to build an compiled language with JavaCC.</p>]]></content>
+    <content type="html"><![CDATA[<p><img src="/images/OQL_JavaCC.png"></p><p>Can’t upload demo due to demo code is already running on the company that I work for.</p><p>Though JavaCC is a compiler compiler or parser generator, I regard it as a compiler frontend which IR is merely Java.</p><p>For the next few weeks, I’m going to build an compiled language with JavaCC.</p>]]></content>
     
     <summary type="html">
     
       
       
         &lt;p&gt;&lt;img src=&quot;/images/OQL_JavaCC.png&quot;&gt;&lt;/p&gt;
-&lt;p&gt;Can’t upload demo due to demo code is already running on my company’s production.&lt;/p&gt;
-&lt;p&gt;Though
+&lt;p&gt;Can’t upload demo due to demo code is already running on the company that I work for.&lt;/p&gt;
+&lt;p&gt;Th
       
     
     </summary>
