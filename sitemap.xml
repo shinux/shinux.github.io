@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2020/04/01/BM25/</loc>
+    
+    <lastmod>2020-04-01T07:39:23.330Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2019/11/08/OQL_JavaCC/</loc>
     
     <lastmod>2019-12-26T03:48:14.744Z</lastmod>
