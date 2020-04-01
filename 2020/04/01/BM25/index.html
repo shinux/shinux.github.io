@@ -10,7 +10,7 @@
 <p><strong>IDF</strong>: 罕见的词区分度更高，分数加成更高<br><strong>fieldLen/avgFieldLen</strong>: 文本越长，总分数越低<br><strong>b</strong>: es 中默认是 0.75，越小，对于上述的当前文本长度与平均文本长度的比值对分数的影响越小，b 为 0 时，分数只与 count 和 relevance 呈正相关<br><strong>f(qi,D)</strong>: tf，文档D 中 query i 出现的频率，频率越高，分数越高<br><strong>k1</strong>: es 中默认是 1.2 ，控制 tf 的斜率，随着 term 出现次数逐渐降低对分数提升的影响，即<strong>Term frequency saturation（词频饱和度)</strong>，当 k1 是 0 时，等于只计算 IDF。</p>
 <p>下图是传统 TF 与 BM25 TF 的分数变化曲线对比：</p>
 <p><img src="/images/TF_comparison.png"></p>
-<p>传统 tf/idf 的 tf 会无限提升相关性，BM25 则在 tf 饱和后一定程度缩小了不同限制了分数。</p>
+<p>传统 tf/idf 的 tf 会无限提升分数，BM25 则在 tf 达到饱和后一定程度缩小了对相关性的影响。</p>
 <h3 id="变量的使用"><a href="#变量的使用" class="headerlink" title="变量的使用"></a>变量的使用</h3><p>原则上不建议调整 b 和 k1 的默认值，优先考虑下列方法:</p>
 <ol>
 <li>最常用的 boost score on query field</li>
