@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><title>Elasticsearch</title><link rel="stylesheet" href="/css/normalize.css"><link rel="stylesheet" href="/css/heti.min.css"><link rel="stylesheet" href="/css/hexo-theme-adoubi.css"><link rel="icon" href="/images/favicon.ico"></head><body><div class="header"><a class="github-link" href="https://github.com/shinux"><img class="github-image" src="/images/Aquicon-Github-small.png"></a><a class="email-link" href="mailto:askb@me.com"><img class="email-image" src="/images/email-small.png"></a><a class="subscribe-link" href="/atom.xml"><img class="subscribe-image" src="/images/subscribe-small.png"></a></div><div class="content"><div class="post-item"></div><h2 class="post-title-wrapper"><p class="post-title">Elasticsearch</p></h2><div class="post-date"><time datetime="2016-11-16T07:46:16.000Z">2016-11-16</time></div><div class="post-content"><h2><span id="or-operation">or operation</span></h2><p>以下内容基于 Elasticsearch 2.0.1 。</p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><title>simple Elasticsearch</title><link rel="stylesheet" href="/css/normalize.css"><link rel="stylesheet" href="/css/heti.min.css"><link rel="stylesheet" href="/css/hexo-theme-adoubi.css"><link rel="icon" href="/images/favicon.ico"></head><body><div class="header"><a class="github-link" href="https://github.com/shinux"><img class="github-image" src="/images/Aquicon-Github-small.png"></a><a class="email-link" href="mailto:askb@me.com"><img class="email-image" src="/images/email-small.png"></a><a class="subscribe-link" href="/atom.xml"><img class="subscribe-image" src="/images/subscribe-small.png"></a></div><div class="content"><div class="post-item"></div><h2 class="post-title-wrapper"><p class="post-title">simple Elasticsearch</p></h2><div class="post-date"><time datetime="2016-11-16T07:46:16.000Z">2016-11-16</time></div><div class="post-content"><h2 id="or-operation"><a href="#or-operation" class="headerlink" title="or operation"></a>or operation</h2><p>以下内容基于 Elasticsearch 2.0.1 。</p>
 <p>首先是 <code>or filter</code> 已经变成了 <code>bool</code> ，它是专门用来合并 queries ，支持 or、and、not 这类操作符的，大概相当于 <code>()</code>(?).</p>
 <ul>
 <li><code>bool</code> 中的 <code>must</code> 就等于 SQL 中的 <code>AND</code></li>
@@ -9,47 +9,50 @@
 <p>现在遇到的情景大概就是想搜索多个空格分隔的关键字，任何一个 field 满足任一个关键字则匹配成功，返回所有匹配成功的结果和它们的 highlight 字段。</p>
 <p>首先是对搜索内容做一点微不足道的处理:</p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> queries = <span class="string">'some keywords'</span>.trim().split(<span class="regexp">/\s+/</span>).map(<span class="function">(<span class="params">query</span>) =&gt;</span> query.lowerCase());</span><br><span class="line"><span class="keyword">const</span> queryString = queries.join(<span class="string">' OR '</span>);</span><br></pre></td></tr></table></figure>
+
 <p>保持所有 query 包裹在 bool 中，把上面的两个变量用在 POST body 中，curl 同理:</p>
 <figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"index"</span>: <span class="string">"index"</span>,</span><br><span class="line">    <span class="attr">"from"</span>: <span class="number">11</span>,</span><br><span class="line">    <span class="attr">"size"</span>: <span class="number">20</span>,</span><br><span class="line">    <span class="attr">"_source"</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">"body"</span>: &#123;</span><br><span class="line">        <span class="attr">"query"</span>: &#123;</span><br><span class="line">            <span class="attr">"bool"</span>: &#123;</span><br><span class="line">            <span class="attr">"should"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"terms"</span>: &#123;</span><br><span class="line">                        <span class="attr">"tags"</span>: queries,</span><br><span class="line">                    &#125;,</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"query_string"</span>: &#123;</span><br><span class="line">                        <span class="attr">"query"</span>: queryString,</span><br><span class="line">                        <span class="attr">"fields"</span>: [<span class="string">"name^5"</span>, <span class="string">"name.analyzed^5"</span>, <span class="string">"email"</span>, <span class="string">"phone"</span>, <span class="string">"content"</span>],</span><br><span class="line">                        <span class="attr">"analyzer"</span>: <span class="string">"whitespace"</span>,</span><br><span class="line">                    &#125;,</span><br><span class="line">                &#125;,</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"minimum_should_match"</span>: <span class="number">1</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"highlight"</span>: &#123;</span><br><span class="line">            <span class="attr">"fields"</span>: &#123;</span><br><span class="line">                "content": &#123; fragment_size: 18, number_of_fragments: 1 &#125;,</span><br><span class="line">                <span class="string">"name: &#123;&#125;,</span></span><br><span class="line">                "name.analyzed": &#123;&#125;,</span><br><span class="line">                "tags": &#123;&#125;,</span><br><span class="line">                "email": &#123;&#125;,</span><br><span class="line">                "phone": &#123;&#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>note: <code>minimum_should_match</code> may not be available in some version of elasticsearch.</p>
-<h2><span id="es-版本升级">es 版本升级</span></h2><h4><span id="download">Download</span></h4><ul>
+<h2 id="es-版本升级"><a href="#es-版本升级" class="headerlink" title="es 版本升级"></a>es 版本升级</h2><h4 id="Download"><a href="#Download" class="headerlink" title="Download"></a>Download</h4><ul>
 <li>本地下载 elasticsearch 新版本，传到服务器上解压，同时 chown -R 整个文件夹拥有者为非 root</li>
 <li>所有 plugins checkout 到新版本，重新编译打包，例如 ik，然后 scp 上传到新版 elasticsearch 的 plugins 中并解压</li>
 </ul>
-<h4><span id="migration">Migration</span></h4><ul>
+<h4 id="Migration"><a href="#Migration" class="headerlink" title="Migration"></a>Migration</h4><ul>
 <li>这两步<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-upgrade.html" target="_blank" rel="noopener">严格按照文档</a>，disable shard allocation 和 synced flush，方便到新的集群中快速 recovery</li>
 <li>停掉旧版本的 cluster</li>
 <li>完整 copy data 文件夹到新版本 elasticsearch 文件夹中</li>
 <li>config/elasticsearch.yml 的内容需要针对新版本做出调整</li>
 </ul>
-<h4><span id="run">Run</span></h4><ul>
+<h4 id="Run"><a href="#Run" class="headerlink" title="Run"></a>Run</h4><ul>
 <li>开启新版 elasticsearch ，同时 enable shard allocation</li>
 <li>[optional] open all indices: <code>curl -XPOST &quot;http://localhost:9200/_all/_open&quot;</code></li>
 <li>等待 shard recovery，在 synced flush 的帮助下这步不会太久</li>
 </ul>
 <p>从 2.0 -&gt; 5.2 整体来说没有想象中那么困难，当然原本的环境就是单点大法…所以过程比较顺畅，有一些小坑，错误都比较明显。</p>
 <p>Referrer: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.3/setup-upgrade.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/6.3/setup-upgrade.html</a></p>
-<h2><span id="es-从单机到集群">es 从单机到集群</span></h2><h4><span id="background">Background</span></h4><ul>
+<h2 id="es-从单机到集群"><a href="#es-从单机到集群" class="headerlink" title="es 从单机到集群"></a>es 从单机到集群</h2><h4 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h4><ul>
 <li>数据增长过快，原有服务器磁盘不足，而云服务器磁盘不支持不停机升级</li>
 <li>依赖 es 的增删改查的 HTTP 请求频繁，希望 migration 过程能做到 zero downtime</li>
 <li>single node 导致的没有 replica shards，服务不够稳定，可用性差</li>
 <li>希望形成真正的 cluster</li>
 <li>考虑之后的扩展能力</li>
 </ul>
-<h4><span id="migration">Migration</span></h4><p>先说结论，最终是没有实现 zero downtime。参考了几个不停机迁移方案以及现有的业务模型和数据规模，感觉过程实现成本和风险远远大于短暂的停机，所以选择了在凌晨重启服务加入了两个新的节点构成集群并在 data nodes 之间同步数据，修改配置和加入集群期间服务不可用大概一分钟多，新的 data node 同步百G级数据完成大概用了4个小时。这一分钟左右没有出现更新操作（凌晨原因），新增操作在后续通过脚本做了补充。</p>
+<h4 id="Migration-1"><a href="#Migration-1" class="headerlink" title="Migration"></a>Migration</h4><p>先说结论，最终是没有实现 zero downtime。参考了几个不停机迁移方案以及现有的业务模型和数据规模，感觉过程实现成本和风险远远大于短暂的停机，所以选择了在凌晨重启服务加入了两个新的节点构成集群并在 data nodes 之间同步数据，修改配置和加入集群期间服务不可用大概一分钟多，新的 data node 同步百G级数据完成大概用了4个小时。这一分钟左右没有出现更新操作（凌晨原因），新增操作在后续通过脚本做了补充。</p>
 <p>关于不停机迁移的方法也看了几个现成的方法诸如</p>
 <p><a href="https://blog.engineering.ticketbis.com/elasticsearch-cluster-migration-without-downtime/" target="_blank" rel="noopener">https://blog.engineering.ticketbis.com/elasticsearch-cluster-migration-without-downtime/</a><br><a href="https://thoughts.t37.net/migrating-a-130tb-cluster-from-elasticsearch-2-to-5-in-20-hours-with-0-downtime-and-a-rollback-39b4b4f29119" target="_blank" rel="noopener">https://thoughts.t37.net/migrating-a-130tb-cluster-from-elasticsearch-2-to-5-in-20-hours-with-0-downtime-and-a-rollback-39b4b4f29119</a></p>
 <p>多半离不开版本号和更新时间这两个字段，迁移过程区分迁移前的数据和迁移过程中新增的数据，在迁移完毕时把新数据再同步一次，这就要求数据只有 create 没有 update 操作在迁移过程中发生，感觉不太适合除了自增类型的例如日志以外的其他业务逻辑。</p>
 <p>关于集群，需要至少3个 master eligible node 以防止脑裂，并把其中两个设置为 data node 承载数据，在磁盘的扩充过程中给每个节点挂载数据盘，方便日后扩容。</p>
-<p><img src="/images/cluster.png"></p>
+<img src="/images/cluster.png">
+
 <p>以其中一个节点为例，几个比较重要的配置是</p>
 <pre><code>discovery.zen.ping.unicast.hosts: [&quot;10.66.90.77:9300&quot;, &quot;10.66.91.150:9300&quot;, &quot;10.30.55.37:9300&quot;]
-network.host: [&quot;10.30.55.37&quot;, _local_]
-</code></pre><p>作为有限且小规模的集群，为 discovery module 指定广播发现节点的私有地址列表，同时允许各个节点在本机的访问调试.</p>
-<h4><span id="summary">Summary</span></h4><p>总之如果不是追求绝对的不停机，并且不愿意增加额外的字段或改变自己的逻辑，es提供的加入集群方式来做迁移数据在我看来是相当简便又稳定的一种方式。</p>
+network.host: [&quot;10.30.55.37&quot;, _local_]</code></pre><p>作为有限且小规模的集群，为 discovery module 指定广播发现节点的私有地址列表，同时允许各个节点在本机的访问调试.</p>
+<h4 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h4><p>总之如果不是追求绝对的不停机，并且不愿意增加额外的字段或改变自己的逻辑，es提供的加入集群方式来做迁移数据在我看来是相当简便又稳定的一种方式。</p>
 <p>后续应该会在众多开源产品中选择一种 monitor 让集群和服务的状态更透明、报警和响应更及时。</p>
-<h4><span id="script-language">script language</span></h4><p>从 2.0.1 升级到 5.1.1 有一阵子了，今天发现了一个存在比较久的问题，就是诸如 update 包括 bulk update 操作，不能被正常的执行。问题集中在那些在 body 中使用 script 的 query，而直接全文更新的则没有问题。例如，对 list 类型的 document 进行局部更新:</p>
+<h4 id="script-language"><a href="#script-language" class="headerlink" title="script language"></a>script language</h4><p>从 2.0.1 升级到 5.1.1 有一阵子了，今天发现了一个存在比较久的问题，就是诸如 update 包括 bulk update 操作，不能被正常的执行。问题集中在那些在 body 中使用 script 的 query，而直接全文更新的则没有问题。例如，对 list 类型的 document 进行局部更新:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST index/type/id/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;script&quot;: &quot;ctx._source.tags -= tag&quot;,</span><br><span class="line">    &quot;params&quot; : &#123;</span><br><span class="line">        &quot;tag&quot; : &quot;blue&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这样的使用在 2.0.1 中是没问题的，然而在 5.x 中却报错：<code>Variable [tag] is not defined.</code> 无法执行这个 script，后来发现了 default lang 不再是 groovy 而变成了 painless ，而 painless 的取值需要携带 key ，即 params.tag 这样才可以正常找到值。那么 groovy 为什么不再是 default 还被新版本中标记为 deprecated 了呢……要知道 groovy 之前替换掉 mvel 的理由是足够快而且简单……</p>
 <p>先说一下什么是 sandboxed language </p>
 <blockquote>
@@ -59,13 +62,16 @@ network.host: [&quot;10.30.55.37&quot;, _local_]
 <p>虽然 5.x 仍然内置 groovy ，但是考虑到 elasticsearch script 的来源，可以是 inline、store 、还有 file，前两个就不说了，一个是 query 中直接写进去的像我上面的例子，另一个也是以数据的形式存在某个 cluster state 的 _script 节点下，而 file 的形式是配置在 elasticsearch 的 config 文件夹中，所以从安全的角度，elasticsearch 5.x 只对 file script 默认允许执行 groovy 。</p>
 <p>至于开头的 query ，如果不考虑安全性，例如默认我们的 elasticsearch 运行与一个相对隔离的环境下，如果还想用 inline groovy ，就可以为 groovy 单独开启一个配置 <code>script.engine.groovy.inline: true</code> 或者更宽泛的，针对所有 inline script 的配置<code>script.inline: true</code>，那么为上面的 script 声明一下 lang 就可以成功执行了（在 Python 和 Node.js 包中拼 dict 和 object 也是一样）：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST index/type/id/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;script&quot; :&#123;</span><br><span class="line">      &quot;inline&quot;: &quot;ctx._source.tags -= tag&quot;,</span><br><span class="line">      &quot;lang&quot;: &quot;groovy&quot;,</span><br><span class="line">      &quot;params&quot; : &#123;</span><br><span class="line">          &quot;tag&quot; : &quot;blue&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>等 painless 相对稳定了，直接切换过去就可以了，毕竟语法都类似，而且还安全。</p>
-<h4><span id="upsert-element-to-exist-document">upsert element to exist document</span></h4><p>一个已经存在的 document 可能有一个 tags 的 element ，它是一个 Array 形态，现在我们想 upsert 某个 tag 进去。</p>
+<h4 id="upsert-element-to-exist-document"><a href="#upsert-element-to-exist-document" class="headerlink" title="upsert element to exist document"></a>upsert element to exist document</h4><p>一个已经存在的 document 可能有一个 tags 的 element ，它是一个 Array 形态，现在我们想 upsert 某个 tag 进去。</p>
 <p>这种 array 的操作通常是用 script 操作的，于是很直观地用到文档中的 upsert:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;script&quot;: &#123;</span><br><span class="line">    &quot;inline&quot;: &quot;ctx._source.tags += tag&quot;,</span><br><span class="line">    &quot;lang&quot;: &quot;groovy&quot;,</span><br><span class="line">    &quot;params&quot;: &#123;</span><br><span class="line">      &quot;tag&quot;: &quot;皮皮虾&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;upsert&quot;: &#123;</span><br><span class="line">    &quot;tags&quot;: [&quot;皮皮虾&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>然而 script 总是执行而 upsert 不执行，原因是 document 已经存在了，这个 upsert 只是针对当 document 不存在时，所以还是要把逻辑做在 script 中:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;script&quot;: &#123;</span><br><span class="line">    &quot;inline&quot;: &quot;if (ctx._source.tags) &#123;ctx._source.tags += tag;&#125; else &#123;ctx._source.tags = [tag]&#125;&quot;,</span><br><span class="line">    &quot;lang&quot;: &quot;groovy&quot;,</span><br><span class="line">    &quot;params&quot;: &#123;</span><br><span class="line">      &quot;tag&quot;: &quot;皮皮虾&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="重启集群节点">重启集群节点</span></h2><p>（以下内容出现的部分流程和命令可以在 《ELASTICSEARCH 源码解析与优化实战》中找到详细的解释，部分内容依据我们的业务场景、部署方式、机器规格有额外的修改）</p>
+
+<h2 id="重启集群节点"><a href="#重启集群节点" class="headerlink" title="重启集群节点"></a>重启集群节点</h2><p>（以下内容出现的部分流程和命令可以在 《ELASTICSEARCH 源码解析与优化实战》中找到详细的解释，部分内容依据我们的业务场景、部署方式、机器规格有额外的修改）</p>
 <p>由于机器升级或某个节点出现了问题，需要执行重启的操作。但是直接重启会引发新插入更新的文档和重启节点的版本不匹配触发全局的 allocation 导致部分 indices 在 recovery 过程中长时间不可用。所以比较平滑的重启方法（rolling restart）如下：</p>
 <ol>
 <li><p>检查集群的状态，不太建议在红色状态下重启，至少是黄绿状态最好 primary shards 都是可用的状态</p>
@@ -83,9 +89,10 @@ network.host: [&quot;10.30.55.37&quot;, _local_]
 </li>
 <li><p>开启切片分配</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -XPUT localhost:9200/_cluster/settings -d '&#123;"transient":&#123;"cluster.routing.allocation.enable": "all"&#125;&#125;'</span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
 <p>等待切片分配完成，期间观察集群的可用状态。</p>
-<h2><span id="集群水平扩容">集群水平扩容</span></h2><p>扩容比较简单，如果集群是上云的，可以直接用加入新节点的方式平衡 data 的储存分配。</p>
+<h2 id="集群水平扩容"><a href="#集群水平扩容" class="headerlink" title="集群水平扩容"></a>集群水平扩容</h2><p>扩容比较简单，如果集群是上云的，可以直接用加入新节点的方式平衡 data 的储存分配。</p>
 <p>只是加入的时候要注意 除了 elasticsearch.yml 的配置要争取之外，jvm.options 的 heap size 也一定要符合机器的水平并且尽量与集群中其他同角色节点的配置<strong>完全相同</strong>，否则会出现 heap size 过小频繁触发 full GC 导致节点故障甚至切片分配问题。</p>
 </div></div><div class="footer"><div class="footer-copyright">Theme By <a href="https://github.com/shinux/hexo-theme-adoubi">Adoubi</a> , Powered By Hexo.</div></div></body></html>
