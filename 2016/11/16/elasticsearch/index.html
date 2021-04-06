@@ -1,4 +1,18 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><title>simple Elasticsearch</title><link rel="stylesheet" href="/css/normalize.css"><link rel="stylesheet" href="/css/heti.min.css"><link rel="stylesheet" href="/css/hexo-theme-adoubi.css"><link rel="icon" href="/images/favicon.ico"></head><body><div class="header"><a class="github-link" href="https://github.com/shinux"><img class="github-image" src="/images/Aquicon-Github-small.png"></a><a class="email-link" href="mailto:askb@me.com"><img class="email-image" src="/images/email-small.png"></a><a class="subscribe-link" href="/atom.xml"><img class="subscribe-image" src="/images/subscribe-small.png"></a></div><div class="content"><div class="post-item"></div><h2 class="post-title-wrapper"><p class="post-title">simple Elasticsearch</p></h2><div class="post-date"><time datetime="2016-11-16T07:46:16.000Z">2016-11-16</time></div><div class="post-content"><h2 id="or-operation"><a href="#or-operation" class="headerlink" title="or operation"></a>or operation</h2><p>以下内容基于 Elasticsearch 2.0.1 。</p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><title>simple Elasticsearch</title><link rel="stylesheet" href="/css/normalize.css"><link rel="stylesheet" href="/css/heti.min.css"><link rel="stylesheet" href="/css/hexo-theme-adoubi.css"><link rel="icon" href="/images/favicon.ico"></head><body><div class="header"><a class="github-link" href="https://github.com/shinux"><img class="github-image" src="/images/Aquicon-Github-small.png"></a><a class="email-link" href="mailto:askb@me.com"><img class="email-image" src="/images/email-small.png"></a><a class="subscribe-link" href="/atom.xml"><img class="subscribe-image" src="/images/subscribe-small.png"></a></div><div class="content"><div class="post-item"></div><h2 class="post-title-wrapper"><p class="post-title">simple Elasticsearch</p></h2><div class="post-date"><time datetime="2016-11-16T07:46:16.000Z">2016-11-16</time></div><div class="post-content"><h2 id="refresh-和-flush-的区别"><a href="#refresh-和-flush-的区别" class="headerlink" title="refresh 和 flush 的区别"></a>refresh 和 flush 的区别</h2><p>refresh:<br>分片默认每秒一次，是 doc 从 memory 到未被提交的轻量 segment(其实仍然在内存里) 的过程<br>此时这个轻量级内存 sgment 已经可以被搜索到了。</p>
+<p>translog:<br>上面说的内存中的 segment 如果在断电或者程序崩溃之类的问题发生时，没办法保证数据持久化到磁盘。<br>所以 elasticsearch 增加了 translog 。translog 中记录了所有还没有被 flush 到磁盘的操作。</p>
+<p>flush:<br>默认每30分钟 flush 一次或者当 translog 太大时触发 flush ，也可以手动调用 api 刷新。<br>flush 发生时</p>
+<ol>
+<li>memory buffer 写到 memory segment</li>
+<li>memory buffer 被清空</li>
+<li>lucene 执行一次 commit</li>
+<li>flush 通过系统的 fsync 进行刷新</li>
+<li>flush 之后，内存段被全量提交，translog 被清空</li>
+</ol>
+<p>这也就解释了为什么我们在 rolling restart 时，最好停止外部的索引变动，手动执行一下 flush 配合 stop allocation. 通过手动减少 translog 中的操作，让 es 快速恢复。</p>
+<p><a href="https://stackoverflow.com/questions/19963406/refresh-vs-flush" target="_blank" rel="noopener">https://stackoverflow.com/questions/19963406/refresh-vs-flush</a></p>
+<p><a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/dynamic-indices.html#img-memory-buffer" target="_blank" rel="noopener">https://www.elastic.co/guide/cn/elasticsearch/guide/current/dynamic-indices.html#img-memory-buffer</a></p>
+<p><a href="https://www.elastic.co/cn/blog/found-elasticsearch-from-the-bottom-up" target="_blank" rel="noopener">https://www.elastic.co/cn/blog/found-elasticsearch-from-the-bottom-up</a></p>
+<h2 id="or-operation"><a href="#or-operation" class="headerlink" title="or operation"></a>or operation</h2><p>以下内容基于 Elasticsearch 2.0.1 。</p>
 <p>首先是 <code>or filter</code> 已经变成了 <code>bool</code> ，它是专门用来合并 queries ，支持 or、and、not 这类操作符的，大概相当于 <code>()</code>(?).</p>
 <ul>
 <li><code>bool</code> 中的 <code>must</code> 就等于 SQL 中的 <code>AND</code></li>
