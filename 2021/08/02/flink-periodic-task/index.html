@@ -4,7 +4,7 @@
 <blockquote>
 <p>当用户提交作业的时候，提交脚本会首先启动一个 Client 进程<br>负责作业的编译与提交。它首先将用户编写的代码编译为一个 JobGraph，在这个过<br>程，它还会进行一些检查或优化等工作，例如判断哪些 Operator 可以 Chain 到同一<br>个 Task 中。然后，Client 将产生的 JobGraph 提交到集群中执行。此时有两种情<br>况，一种是类似于 Standalone 这种 Session 模式，AM 会预先启动，此时 Client<br>直接与 Dispatcher 建立连接并提交作业即可。另一种是 Per-Job 模式，AM 不会<br>预先启动，此时 Client 将首先向资源管理系统（ 如 Yarn、K8S）申请资源来启动<br>AM，然后再向 AM 中的 Dispatcher 提交作业。</p>
 </blockquote>
-<p>这也就是我觉得在 Session 模式下，大家共享了同一个预先启动的 App Master 和 Task Executor，在执行时的模式也是单进程多线程的形态，所以导致了我可以在算子中，读取到在 main 函数中声明的变量或实例；但在 per-job 模式下，就不可以这么做。</p>
+<p>这也就是我觉得在 Session 模式下，大家共享了同一个预先启动的 App Master 和 Task Executor，所以导致了我可以在算子中，读取到在 main 函数中声明的变量或实例；但在 per-job 模式下，大家的一切都是独享的，就不可以这么做。</p>
 <h3 id="在-Flink-中写定时任务"><a href="#在-Flink-中写定时任务" class="headerlink" title="在 Flink 中写定时任务"></a>在 Flink 中写定时任务</h3><p>初衷是将数据流中，有共性并且可以延迟处理的内容通过缓存承载，然后在定时任务中聚合后再做执行。</p>
 <h4 id="第一版-Guava-scheduled-thread-pool"><a href="#第一版-Guava-scheduled-thread-pool" class="headerlink" title="第一版 Guava + scheduled thread pool"></a>第一版 Guava + scheduled thread pool</h4><p>傻乎乎的以为 flink 任务只是分发的形式，所以采用了 Google 的 Guava 内存缓存，在 source 的每一份 stream 中，然后通过定义在 main 方法中的 <code>executor.scheduleAtFixedRate</code> 做定时任务，妄图拿到所有算子中存下的缓存：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(<span class="number">10</span>);</span><br><span class="line">executor.scheduleAtFixedRate(<span class="keyword">new</span> LazyOperationScheduler(), <span class="number">30</span>, <span class="number">30</span>, TimeUnit.SECONDS);</span><br></pre></td></tr></table></figure>
