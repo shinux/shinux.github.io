@@ -1,0 +1,110 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><title>Scala 从入门到入眠</title><link rel="stylesheet" href="/css/normalize.css"><link rel="stylesheet" href="/css/heti.min.css"><link rel="stylesheet" href="/css/hexo-theme-adoubi.css"><link rel="icon" href="/images/favicon.ico"></head><body><div class="header"><a class="github-link" href="https://github.com/shinux"><img class="github-image" src="/images/Aquicon-Github-small.png"></a><a class="email-link" href="mailto:askb@me.com"><img class="email-image" src="/images/email-small.png"></a><a class="subscribe-link" href="/atom.xml"><img class="subscribe-image" src="/images/subscribe-small.png"></a></div><div class="content"><div class="post-item"></div><h2 class="post-title-wrapper"><p class="post-title">Scala 从入门到入眠</p></h2><div class="post-date"><time datetime="2022-01-17T07:46:16.000Z">2022-01-17</time></div><div class="post-content"><p>以下内容基于 <a href="https://docs.scala-lang.org/tour/tour-of-scala.html" target="_blank" rel="noopener">Tour of Scala</a></p>
+<p>在快速浏览了一一遍 tour 中的内容后，我把 Scala 与其他常见的编程语言如 Java、Python、JavaScript 等在设计、结构、推荐写法等方面，做一个横向的对比。由于这份文档是基于 Scala2 的，而我本地调试用的是 Scala3，所以还会提及一些 2 和 3 的区别。</p>
+<h3 id="introduction"><a href="#introduction" class="headerlink" title="introduction"></a>introduction</h3><ul>
+<li>面向对象，所有值都是对象</li>
+<li>函数式编程语言</li>
+<li>静态类型语言、类型推断</li>
+<li>可扩展性，通过宏的方式实现其他语言结构</li>
+<li>互通性，JRE 环境友好，与主流面向对象java编程语言无缝衔接，对应的 Java 库也都可以调用</li>
+</ul>
+<h3 id="Basics"><a href="#Basics" class="headerlink" title="Basics"></a>Basics</h3><ul>
+<li><p>Expression 的 result 类型是可以自动推断出的，也可以显式声明。</p>
+</li>
+<li><p>Val （values）是不可变的，无法 reassign，var (variables) 是可以重复赋值的。By default, Scala always picks immutable collections. </p>
+</li>
+<li><p>functions 和 method 的区别是， function 类似 JavaScript 中的匿名函数，method 是类似 Python 一样的用 def 定义的方法</p>
+</li>
+<li><p>method 还可以接受多组参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def addThenMultiply(x: Int, y: Int)(multiplier: Int): Int = (x + y) * multiplier</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>这个设计起初我不太理解，因为完全可以把后面的的参数变成默认唯一一组参数中的某个值，后面在讲到柯里化的一系列应用以及帮助类型推断方面有很大的用处。</p>
+<ul>
+<li><p>类型的声明总在冒号后，这句话重复了好多次。</p>
+</li>
+<li><p>Scala 默认不（建议）用 return，最后一个表达式的结果就是返回值，这里如果之前只接触过 oop 没接触过 fp 的人来说会有点奇怪，查了一下主要有以下原因</p>
+</li>
+</ul>
+<ol>
+<li>副作用：影响 type inferred，影响性能</li>
+<li>不符合 fp 的设定：尽量用表达式，而非语句</li>
+</ol>
+<ul>
+<li><p>类，和其他语言差不多，接受构造参数，实现方法。没有意义的返回是 Unit 类型，类似 Java 和 C 中的 void，type Unit 返回值是 ()。</p>
+</li>
+<li><p>Case class  有点像 atom，实例是不可变的，比较的时候是值，而非引用。</p>
+</li>
+<li><p>Traits 特征/特质，类似 interface，可以继承，方法可以重写</p>
+</li>
+<li><p>main 作为入口接受 array of strings 作为参数，因为 JVM 虚拟机需求。</p>
+</li>
+</ul>
+<h3 id="Unified-Types"><a href="#Unified-Types" class="headerlink" title="Unified Types"></a>Unified Types</h3><ul>
+<li>Any 是 top type，实现了一些通用的方法。下面氛围 AnyVal 和 AnyRef</li>
+<li>AnyVal 表示值类型，有9种预先设定的非空的子类型；Unit 表示空，它只有一种实例，是 <code>()</code>，有时候用于 return。</li>
+<li>AnyRef 表示引用类型，用户定义的都是 AnyRef，类似 java.lang.Object </li>
+<li>类型转换是单向的</li>
+<li>Nothing 是一个 bottom type，没有任何值的类型是它，通常用于抛出异常，未正确返回的函数，无法 eval 成值的表达式等。</li>
+<li>Null 是 AnyRef 的一个 subtype，有一个 null 关键字值，主要为了转成其他 JVM 语言，在 scala 里不应该使用。</li>
+</ul>
+<h3 id="Class"><a href="#Class" class="headerlink" title="Class"></a>Class</h3><ul>
+<li><p>没定义构造函数的，会有一个不接受参数的默认构造函数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Point(var x: Int, var y: Int) &#123;</span><br><span class="line"></span><br><span class="line">  def move(dx: Int, dy: Int): Unit = &#123;</span><br><span class="line">    x = x + dx</span><br><span class="line">    y = y + dy</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  override def toString: String =</span><br><span class="line">    s&quot;($x, $y)&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一个4个成员的类，构造函数的参数可以写进 class 定义部分</p>
+</li>
+<li><p>move 方法啥也没返回，所以是 Unit，类似 void </p>
+</li>
+<li><p>函数/类的参数可以有默认值以及传递命名参数，这可比 java 强多了</p>
+</li>
+<li><p>private val/var，会自动生成 getter setter，此外的都是 private values 对外不可访问</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Point(x: Int, y: Int)</span><br><span class="line">val point = new Point(1, 2)</span><br><span class="line">point.x  // &lt;-- does not compile</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="Default-Parameter-Values"><a href="#Default-Parameter-Values" class="headerlink" title="Default Parameter Values"></a>Default Parameter Values</h3><p>除了转成 java 调用时，会遇到问题，注意重新抽象或者必传所有参数。其他的与 Python 的使用没有差别。</p>
+<h3 id="Named-Arguments"><a href="#Named-Arguments" class="headerlink" title="Named Arguments"></a>Named Arguments</h3><p>命名参数可以乱序，未命名的一定要在命名的之前，从 java 中调用还是有问题。</p>
+<h3 id="Traits"><a href="#Traits" class="headerlink" title="Traits"></a>Traits</h3><p>无法实例化，没有参数，非常适合用于泛型和抽象方法。<br>继承类中，需要实现 trait 的方法，包括遵循子类型。</p>
+<h3 id="Tuple"><a href="#Tuple" class="headerlink" title="Tuple"></a>Tuple</h3><p>和 Python 的 tuple 基本一样，通过下标访问的方式是 <code>_1</code><br>Pattern matching 这个部分，可以用于拆解赋值，也可以用于 for 循环中的匹配输出，还可以用于列表推导，还是很灵活的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val numPairs = List((2, 5), (3, -7), (20, 56))</span><br><span class="line">for ((a, b) &lt;- numPairs) &#123;</span><br><span class="line">  println(a * b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里 for 循环的倒箭头惊到我了hhh。<br>关于 tuple 和 case classes 的选择问题，case classes 的可读性会更好一些。</p>
+<h3 id="Class-Composition-with-Mixins"><a href="#Class-Composition-with-Mixins" class="headerlink" title="Class Composition with Mixins"></a>Class Composition with Mixins</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class D extends B with C</span><br></pre></td></tr></table></figure>
+
+<p>这里 D 的父类是 B，mixin 就是 C。父类只有一个，mixin 可以有多个。<br>Trait 间的继承不需要实现父 trait 的方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">trait RichIterator extends AbsIterator &#123;</span><br><span class="line">  def foreach(f: T =&gt; Unit): Unit = while (hasNext) f(next())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个写法就很 cool 了。</p>
+<h3 id="Higher-order-Functions"><a href="#Higher-order-Functions" class="headerlink" title="Higher-order Functions"></a>Higher-order Functions</h3><p>参数是 function 或者返回值是 function 。这和 Python 的函数作为 first-class 是一个意思。<br>一个 map(function) 这样的例子。<br>另外一种方式是类似工厂模式，通过实现不同函数的细化某一类事情。<br>返回值是一个匿名函数。仔细想了一下，创建函数的必要性，有点像 Python 中的偏函数，当然也可以用其他方式去实现，只是这样会更直观，我返回的就是一个函数，而不需要像在 java 中做一些重载或者反复定义的事情了。</p>
+<h3 id="nested-methods"><a href="#nested-methods" class="headerlink" title="nested methods"></a>nested methods</h3><p>函数的嵌套，这很函数式编程，很早的时候我看 SICP 和  c311 的时候用到 Scheme 这门 Lisp 方言，经常写一些回括号很多的套了好多表达式的代码。<br>对 scala 的 function 和 method 的定义区分又模糊了，在原有的 Python 或者 Node 中，我会认为 method 是 class 中的方法，function 是外面单独定义的命名或者匿名的，现在没有上下文的情况下，文档把这种东西叫 method，有点迷惑。</p>
+<h3 id="Multiple-Parameter-Lists-Currying"><a href="#Multiple-Parameter-Lists-Currying" class="headerlink" title="Multiple Parameter Lists (Currying)"></a>Multiple Parameter Lists (Currying)</h3><p>Currying 这种东西在 JavaScript，尤其是一些前端的 code 中经常能看到，就是函数后接着好多组参数，每一个前面的结果是另一个函数，继续接受下一个参数，一直到末尾。</p>
+<p>我对这种东西持有中立态度。理论上所有高阶函数都可以写成更易读的普通函数，这里还要看文档和逻辑支撑情况。<br>这里举了一个很好的例子，就是类型推断，如果用 flatten parameters 的话，匿名函数的参数需要显式指明，否则会编译失败。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def foldLeft1[A, B](as: List[A], b0: B, op: (B, A) =&gt; B) = ???</span><br><span class="line">def notPossible = foldLeft1(numbers, 0, _ + _)</span><br></pre></td></tr></table></figure>
+
+<p>此时编译器仍然在推断 A 和 B。而如果改成多参数的话：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def foldLeft2[A, B](as: List[A], b0: B)(op: (B, A) =&gt; B) = ???</span><br><span class="line">def possible = foldLeft2(numbers, 0)(_ + _)</span><br></pre></td></tr></table></figure>
+
+<p>编译器就能自己 infer 出来了。</p>
+<p>偏函数也提了一下，在 3 中，柯里化已不再需要占位符。</p>
+<p>其实这一节的重点是 <code>implicit</code>，虽然之前没有接触过，但是看了一些别人写的东西，感觉还是大有可为的。另外 scala 没有静态成员，可以把 implicit function 写在半生对象里。隐式转换只会触发一次，另外是在编译器查找方法失败的情况下才会触发，这里要特别注意一下。</p>
+<h3 id="Case-Classes"><a href="#Case-Classes" class="headerlink" title="Case Classes"></a>Case Classes</h3><p>一种主打 immutable 的类。实例化的时候不用 new，case class 能自己 apply ，参数尽量不用 var。比较时比较的是值，而不是引用，复制的时候，也是浅拷贝，这两个挺好的，用起来会比较顺手，不会出现某些语言大量地址引用，复制修改时要格外小心。</p>
+<h3 id="Pattern-Matching"><a href="#Pattern-Matching" class="headerlink" title="Pattern Matching"></a>Pattern Matching</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import scala.util.Random</span><br><span class="line"></span><br><span class="line">val x: Int = Random.nextInt(10)</span><br><span class="line"></span><br><span class="line">x match &#123;</span><br><span class="line">  case 0 =&gt; &quot;zero&quot;</span><br><span class="line">  case 1 =&gt; &quot;one&quot;</span><br><span class="line">  case 2 =&gt; &quot;two&quot;</span><br><span class="line">  case _ =&gt; &quot;other&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>比 switch 写起方便一点；另一个例子中参数定义的是父类，但是传入 instance match 到具体子类（case class），比 java 的不停 cast 强了很多。另外就是可以通过 boolean expression 的方式去 match 某个参数值</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">case Email(sender, _, _) if importantPeopleInfo.contains(sender) =&gt;</span><br><span class="line">      &quot;You got an email from special someone!&quot;</span><br></pre></td></tr></table></figure>
+
+<p>还可以只 match 类型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def goIdle(device: Device) = device match &#123;</span><br><span class="line">  case p: Phone =&gt; p.screenOff</span><br><span class="line">  case c: Computer =&gt; c.screenSaverOn</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>sealed</code> 密封这个概念也很有趣，让所有的子类型都在同一个文件里，不过这样确实保证了无 catch other 的状况。</p>
+<h3 id="Singleton-Objects"><a href="#Singleton-Objects" class="headerlink" title="Singleton Objects"></a>Singleton Objects</h3><p>全局的单例对象，非常适合用作工具方法。另外就是伴生对象和伴生类。这里提到了一个<code>Option</code>类别，类型如其名，当函数有可能不返回值的时候使用，<code>Option</code>有两个子类 <code>Some</code> 和 <code>None</code> ，在这里 <a href="https://stackoverflow.com/a/49945780/4251114" target="_blank" rel="noopener">Understanding Some and Option in Scala - Stack Overflow</a> 提到，用 <code>Option</code> 的好处是调用者都必须要检查值是否存在，而且不仅仅用在 match 这里，在任何 <code>map</code> ,<code>flatMap</code>和 <code>getOrElse</code>中都可以使用。</p>
+<h3 id="Regular-Expression-Patterns"><a href="#Regular-Expression-Patterns" class="headerlink" title="Regular Expression Patterns"></a>Regular Expression Patterns</h3><p>用 <code>.r</code>结尾是没想到的。虽然后面两节才介绍 for  循环，但是每次看到反箭头还是会别扭一下。</p>
+<h3 id="Extractor-Objects"><a href="#Extractor-Objects" class="headerlink" title="Extractor Objects"></a>Extractor Objects</h3><p>开始的时候会有点误会 <code>apply</code> 和 <code>unapply</code> 是在做 serialization deserialization，实际上是在做 construction 和 deconstruction，解构这个概念挺好的，</p>
+<h3 id="For-Comprehensions"><a href="#For-Comprehensions" class="headerlink" title="For Comprehensions"></a>For Comprehensions</h3><p><code>for (enumerators) yield e</code> 也可以不 yield 这样 for 语句就返回了 Unit。注意返回值的类型是由第一个 generator 决定的，如 <code>xx &lt;- xxList</code> 那这返回的就是一个 List，然后 yield 的值的类型决定了 List 中 item 的类型。</p>
+<h3 id="Generic-Classes"><a href="#Generic-Classes" class="headerlink" title="Generic Classes"></a>Generic Classes</h3><p>泛型类， <code>calass Stack[A]</code> 虽然也是用什么都行，之前看到的可能更多是在用 T。 <code>elements = x :: elements</code> 这里是个 prepending 如果是要 appending，则是 <code>elements = elements :+ x</code>。<code>Nil</code>表示的是空数组，如果我们创建一个空数组 <code>var a = List.empty[String]</code> 和 <code>Nil</code>做一下比较会发现二者是一样的。子类型也可以传入泛型类。</p>
+<h3 id="Variances"><a href="#Variances" class="headerlink" title="Variances"></a>Variances</h3><p>这一部分讲的是协变和逆变。和 C# 一样，是在抽象类定义时就约定好的，而 Java 是在使用时通过 <code>&lt;? Extends T&gt;</code> 和 <code>&lt;? Super T&gt;</code> 实现的。在相当长的一段时间里，我并不懂为什么需要有逆变这种东西，这里关于 Java 的逆变的作用，<a href="https://kotlinlang.org/docs/generics.html#variance" target="_blank" rel="noopener">Kotlin 的文档</a>讲得挺好的，</p>
+<h3 id="Upper-Type-Bounds"><a href="#Upper-Type-Bounds" class="headerlink" title="Upper Type Bounds"></a>Upper Type Bounds</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class PetContainer[P &lt;: Pet](p: P) &#123;</span><br><span class="line">  def pet: P = p</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>T &lt;: A</code> 表示当T 为 A 的子类型时，构建这个 container。</p>
+</div></div><div class="footer"><div class="footer-copyright">Theme By <a href="https://github.com/shinux/hexo-theme-adoubi">Adoubi</a> , Powered By Hexo.</div></div></body></html>
